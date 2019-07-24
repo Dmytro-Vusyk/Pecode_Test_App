@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Pecode_Test_App</string>
+    <string name="create_notification_button">Create new \nnotification</string>
+    <string name="fragment_number">1</string>
+
+
+    <!--Notification strings -->
+    <string name="main_notification_channel_name">Primary</string>
+    <string name="notification_title">Chat heads active</string>
+    <string name="notification_body">Notification</string>
+
+</resources>
