@@ -56,8 +56,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
             MyFragment instantiatedFragment = (MyFragment) super.instantiateItem(container, position);
-            Log.d("INSTANTIATE ITEM", String.valueOf(position));
+            Log.d("INSTANTIATE ITEM_1", String.valueOf(position));
             MyFragment fragment = pages.get(position);
+            Log.d("INSTANTIATE ITEM_2", String.valueOf(position));
             return fragment;
         }
 
@@ -72,13 +73,9 @@ public class MainActivity extends AppCompatActivity {
 
             if (index == -1) {
                 return POSITION_NONE;
-            } else if (index == pages.size()) {
-                return index - 1;
-            } else {
-                return index;
             }
+            return index;
         }
-
     }
 
 }

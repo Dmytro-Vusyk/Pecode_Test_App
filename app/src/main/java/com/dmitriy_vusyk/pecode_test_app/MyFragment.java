@@ -92,8 +92,6 @@ public class MyFragment extends android.support.v4.app.Fragment implements View.
         MainActivity activity = (MainActivity) getActivity();
         int itemPosition = activity.pager.getCurrentItem();
         MyFragment currentFragment = activity.myPagerAdapter.getRegisteredFragment(itemPosition);
-        int savedItemPosition = itemPosition;
-
 
         switch (id) {
             case R.id.btn_create_notification:
@@ -112,7 +110,7 @@ public class MyFragment extends android.support.v4.app.Fragment implements View.
                     activity.pages.add(nextFragment);
                     activity.myPagerAdapter.notifyDataSetChanged();
                     activity.pager.setAdapter(activity.myPagerAdapter);
-                    activity.pager.setCurrentItem(savedItemPosition);
+                    activity.pager.setCurrentItem(itemPosition + 1);
                 } else {
                     activity.pages.add(nextPagePosition, nextFragment);
                     activity.myPagerAdapter.notifyDataSetChanged();
