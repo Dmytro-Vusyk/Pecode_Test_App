@@ -11,13 +11,16 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.ViewGroup;
 
+import com.dmitriy_vusyk.pecode_test_app.adapter.FixedFragmentStatePagerAdapter;
+
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
-    SparseArray<MyFragment> pages;
+    ArrayList<MyFragment> pages;
 
     public ViewPager pager;
     public MyPagerAdapter myPagerAdapter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,29 +29,30 @@ public class MainActivity extends AppCompatActivity {
 
         pager = (ViewPager) findViewById(R.id.pager);
         myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
-        pages.put(0, MyFragment.getInstance(0));
+        pages.add(MyFragment.getInstance(0));
         pager.setAdapter(myPagerAdapter);
 
     }
 
-    public void replaceData() {
-        SparseArray<MyFragment> pages = this.pages.clone();
-        this.pages.clear();
-        this.pages = pages.clone();
-    }
+  //  public void replaceData() {
+  //      ArrayList<MyFragment> pages = (ArrayList<MyFragment>) this.pages.clone();
+  //      this.pages.clear();
+  //      this.pages = (ArrayList<MyFragment>) pages.clone();
+  //  }
 
     public class MyPagerAdapter extends FragmentStatePagerAdapter {
 
+        FragmentManager fm;
 
         public MyPagerAdapter(FragmentManager fm) {
             super(fm);
-            pages = new SparseArray<>();
+            this.fm = fm;
+            pages = new ArrayList<>();
         }
-
 
         @Override
         public Fragment getItem(int i) {
-            Log.d("GET ITEM", "!!!!!!!!!!!!!!!!!!!");
+            Log.d("GET ITEM", String.valueOf(i));
             return pages.get(i);
         }
 
@@ -61,21 +65,21 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
             MyFragment fragment = (MyFragment) super.instantiateItem(container, position);
-            pages.put(position, fragment);
             Log.d("INSTANTIATE ITEM", "!!!!!!!!!!!!!!!!!!!");
             return fragment;
         }
-
 
         public MyFragment getRegisteredFragment(int position) {
             return pages.get(position);
         }
 
-
         @Override
         public int getItemPosition(@NonNull Object object) {
-            Log.d("GET ITEM POSITION", "!!!!!!!!!!!!!!!!!!!");
-            return POSITION_UNCHANGED;
+            int index = ((MyFragment)object).getFragmentId();
+            Log.d("GET ITEM POSITION", String.valueOf(index));
+
+            if(index==-1) return POSITION_NONE;
+            return index;
         }
 
     }
