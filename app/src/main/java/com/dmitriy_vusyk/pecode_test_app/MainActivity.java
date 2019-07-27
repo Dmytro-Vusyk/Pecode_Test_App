@@ -1,5 +1,6 @@
 package com.dmitriy_vusyk.pecode_test_app;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,9 @@ public class MainActivity extends AppCompatActivity {
 
     ArrayList<MyFragment> pages;
 
+    private String LOG_TAG = "LIFECYCLE:";
+    private String PAGES_SAVE_TAG = "pages:";
+
     public ViewPager pager;
     public MyPagerAdapter myPagerAdapter;
 
@@ -24,12 +28,36 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Log.d(LOG_TAG, "MainActivity: onCreate");
         pager = (ViewPager) findViewById(R.id.pager);
         myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
         pages.add(0, MyFragment.getInstance(0));
         pager.setAdapter(myPagerAdapter);
-
     }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        Log.d(LOG_TAG, "MainActivity: onNewIntent");
+        int id = intent.getIntExtra(NotificationFactory.FRAGMENT_ID, 0);
+        for (int i = 0; i < pages.size(); i++) {
+            if (id == pages.get(i).getFragmentId()) {
+                pager.setCurrentItem(i);
+            }
+        }
+    }
+
+  // @Override
+  // protected void onSaveInstanceState(Bundle outState) {
+  //     super.onSaveInstanceState(outState);
+  //     Log.d(LOG_TAG, "MainActivity:  onSaveInstanceState()");
+  // }
+
+  // @Override
+  // protected void onRestoreInstanceState(Bundle savedInstanceState) {
+  //     super.onRestoreInstanceState(savedInstanceState);
+  //     Log.d(LOG_TAG, "MainActivity:  onRestoreInstanceState()");
+
+  // }
 
     public class MyPagerAdapter extends FragmentStatePagerAdapter {
 

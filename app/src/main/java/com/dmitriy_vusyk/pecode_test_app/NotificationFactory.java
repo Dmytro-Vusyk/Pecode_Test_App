@@ -24,21 +24,14 @@ public class NotificationFactory {
     private Map<MyFragment, ArrayList<Integer>> notificationsBuffer = new HashMap<>();
     private int notificationId = 0;
     private int pendingIntentId = 0;
-    private final String NOTIFICATION_CHANNEL_ID = "notification_channel";
+    private static final String NOTIFICATION_CHANNEL_ID = "notification_channel";
+    public static final String FRAGMENT_ID = "fragment_ID";
 
     public NotificationFactory() {
     }
 
     public int getNotificationId() {
         return notificationId;
-    }
-
-    public int getPendingIntentId() {
-        return pendingIntentId;
-    }
-
-    public String getNOTIFICATION_CHANNEL_ID() {
-        return NOTIFICATION_CHANNEL_ID;
     }
 
     public void createNotification(Context context, int label) {
@@ -57,16 +50,15 @@ public class NotificationFactory {
 
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-                        .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
-                        .setSmallIcon(R.drawable.oval_copy)
-                        .setLargeIcon(largeIcon(context))
+                        .setSmallIcon(R.drawable.circle)
                         .setContentTitle(context.getString(R.string.notification_title))
                         .setContentText(context.getString(R.string.notification_body) + " " + label)
                         .setStyle(new NotificationCompat.BigTextStyle().bigText(
                                 context.getString(R.string.notification_body)))
                         .setDefaults(Notification.DEFAULT_VIBRATE)
-                        .setContentIntent(contentIntent(context))
-                        .setAutoCancel(true);
+                        .setContentIntent(contentIntent(context, label - 1))
+                        .setAutoCancel(true)
+                        .setShowWhen(false);
 
         // If the build version is greater than or equal to JELLY_BEAN and less than OREO,
         // set the notification's priority to PRIORITY_HIGH.
@@ -81,14 +73,15 @@ public class NotificationFactory {
         incrementIDs();
     }
 
-    private PendingIntent contentIntent(Context context) {
-        Intent startActivityIntent = new Intent(context, MyFragment.class);
+    private PendingIntent contentIntent(Context context, int id) {
+        Intent startActivityIntent = new Intent(context, MainActivity.class);
+        startActivityIntent.putExtra(FRAGMENT_ID, id);
 
         return PendingIntent.getActivity(
                 context,
                 pendingIntentId,
                 startActivityIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
     public void bindNotifications(MyFragment f, ArrayList<Integer> ids) {
@@ -101,7 +94,6 @@ public class NotificationFactory {
             for (Integer id : values) {
                 deleteIntent(context, id);
             }
-
             notificationsBuffer.remove(fragment);
         }
     }

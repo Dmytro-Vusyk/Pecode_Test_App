@@ -1,5 +1,6 @@
 package com.dmitriy_vusyk.pecode_test_app;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,16 +16,12 @@ import java.util.ArrayList;
 public class MyFragment extends android.support.v4.app.Fragment implements View.OnClickListener {
 
     private final String TAG = getClass().getSimpleName();
-
-
     private ImageButton ibCreateNotification;
     private ImageButton ibAddFragment;
     private ImageButton ibDeleteFragment;
     private TextView tvFragmentNumber;
     private ImageView ivOval;
-
-    NotificationFactory factory = new NotificationFactory();
-
+    private NotificationFactory factory = new NotificationFactory();
     private static final String ARGUMENT_PAGE_NUMBER = "arg_page_number";
     private static final String ARGUMENT_PAGE_LABEL = "arg_page_label";
     private int fragmentId;
@@ -85,7 +82,6 @@ public class MyFragment extends android.support.v4.app.Fragment implements View.
         super.setArguments(args);
     }
 
-
     @Override
     public void onClick(View v) {
         int id = v.getId();
@@ -121,12 +117,23 @@ public class MyFragment extends android.support.v4.app.Fragment implements View.
 
             case R.id.btn_minus:
                 if (itemPosition > 0) {
+                    factory.deleteAllFragmentNotifications(getContext(), currentFragment);
                     activity.pages.remove(itemPosition);
                     activity.myPagerAdapter.notifyDataSetChanged();
                     activity.pager.setAdapter(activity.myPagerAdapter);
                     activity.pager.setCurrentItem(itemPosition - 1);
                 }
                 break;
+
+            //Uncomment this for simple button plus realisation
+            // case R.id.btn_plus:
+            //     MyFragment lastFragment = activity.myPagerAdapter.getRegisteredFragment(activity.pages.size()-1);
+            //     MyFragment nextFragment = MyFragment.getInstance(lastFragment.fragmentId+1);
+            //     activity.pages.add(nextFragment);
+            //     activity.myPagerAdapter.notifyDataSetChanged();
+            //     activity.pager.setAdapter(activity.myPagerAdapter);
+            //     activity.pager.setCurrentItem(itemPosition);
+            //     break;
         }
     }
 }
