@@ -3,7 +3,6 @@ package com.dmitriy_vusyk.pecode_test_app;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +13,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class MyFragment extends android.support.v4.app.Fragment implements View.OnClickListener {
+
+    private final String TAG = getClass().getSimpleName();
+
 
     private ImageButton ibCreateNotification;
     private ImageButton ibAddFragment;
@@ -86,49 +88,47 @@ public class MyFragment extends android.support.v4.app.Fragment implements View.
 
     @Override
     public void onClick(View v) {
-        Log.d("BUTTON ", "click");
-
         int id = v.getId();
         MainActivity activity = (MainActivity) getActivity();
-        int itemIndex = activity.pager.getCurrentItem();
-        MyFragment fragment = activity.myPagerAdapter.getRegisteredFragment(activity.pager.getCurrentItem());
-        Log.d("itemIndex = ", String.valueOf(itemIndex));
+        int itemPosition = activity.pager.getCurrentItem();
+        MyFragment currentFragment = activity.myPagerAdapter.getRegisteredFragment(itemPosition);
+        int savedItemPosition = itemPosition;
+
 
         switch (id) {
             case R.id.btn_create_notification:
                 factory.createNotification(getContext(), label);
                 ids.add(factory.getNotificationId());
-                factory.bindNotifications(fragment, ids);
+                factory.bindNotifications(currentFragment, ids);
                 break;
 
             case R.id.btn_plus:
-                int nextPageID = itemIndex + 1;
-                MyFragment nextFragment = MyFragment.getInstance(nextPageID);
-                if(activity.pages.get(itemIndex).equals(nextFragment)){
-                    activity.pager.setCurrentItem(nextPageID);
-                    break;
+                int nextPagePosition = itemPosition + 1;
+                MyFragment nextFragment = MyFragment.getInstance(currentFragment.fragmentId + 1);
+                if (nextPagePosition < activity.pages.size() &&
+                        nextFragment.fragmentId == activity.myPagerAdapter.getRegisteredFragment(nextPagePosition).fragmentId) {
+                    activity.pager.setCurrentItem(nextPagePosition);
+                } else if (nextPagePosition == activity.pages.size()) {
+                    activity.pages.add(nextFragment);
+                    activity.myPagerAdapter.notifyDataSetChanged();
+                    activity.pager.setAdapter(activity.myPagerAdapter);
+                    activity.pager.setCurrentItem(savedItemPosition);
+                } else {
+                    activity.pages.add(nextPagePosition, nextFragment);
+                    activity.myPagerAdapter.notifyDataSetChanged();
+                    activity.pager.setAdapter(activity.myPagerAdapter);
+                    activity.pager.setCurrentItem(itemPosition + 1);
                 }
-                activity.pages.add(nextPageID, nextFragment);
-                activity.myPagerAdapter.notifyDataSetChanged();
-                activity.pager.setCurrentItem(activity.pager.getCurrentItem() + 1);
-                activity.pager.setOffscreenPageLimit(activity.pages.size());
-                //activity.myPagerAdapter.notifyDataSetChanged();
-                Log.d("nextPageID = ", String.valueOf(nextPageID));
                 break;
 
             case R.id.btn_minus:
-                if (itemIndex > 0) {
-                    activity.pages.remove(itemIndex);
-                  //  activity.replaceData();
+                if (itemPosition > 0) {
+                    activity.pages.remove(itemPosition);
                     activity.myPagerAdapter.notifyDataSetChanged();
-                    activity.pager.setCurrentItem(itemIndex - 1);
-                    activity.pager.setOffscreenPageLimit(activity.pages.size());
-                    activity.myPagerAdapter.notifyDataSetChanged();
-                  //  activity.pager.setOffscreenPageLimit(activity.pages.size());
-                    factory.deleteAllFragmentNotifications(getContext(), fragment);
+                    activity.pager.setAdapter(activity.myPagerAdapter);
+                    activity.pager.setCurrentItem(itemPosition - 1);
                 }
                 break;
         }
     }
-
 }

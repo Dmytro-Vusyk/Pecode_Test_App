@@ -8,10 +8,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.ViewGroup;
-
-import com.dmitriy_vusyk.pecode_test_app.adapter.FixedFragmentStatePagerAdapter;
 
 import java.util.ArrayList;
 
@@ -29,16 +26,10 @@ public class MainActivity extends AppCompatActivity {
 
         pager = (ViewPager) findViewById(R.id.pager);
         myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
-        pages.add(MyFragment.getInstance(0));
+        pages.add(0, MyFragment.getInstance(0));
         pager.setAdapter(myPagerAdapter);
 
     }
-
-  //  public void replaceData() {
-  //      ArrayList<MyFragment> pages = (ArrayList<MyFragment>) this.pages.clone();
-  //      this.pages.clear();
-  //      this.pages = (ArrayList<MyFragment>) pages.clone();
-  //  }
 
     public class MyPagerAdapter extends FragmentStatePagerAdapter {
 
@@ -64,8 +55,9 @@ public class MainActivity extends AppCompatActivity {
         @NonNull
         @Override
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
-            MyFragment fragment = (MyFragment) super.instantiateItem(container, position);
-            Log.d("INSTANTIATE ITEM", "!!!!!!!!!!!!!!!!!!!");
+            MyFragment instantiatedFragment = (MyFragment) super.instantiateItem(container, position);
+            Log.d("INSTANTIATE ITEM", String.valueOf(position));
+            MyFragment fragment = pages.get(position);
             return fragment;
         }
 
@@ -75,11 +67,16 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getItemPosition(@NonNull Object object) {
-            int index = ((MyFragment)object).getFragmentId();
+            int index = ((MyFragment) object).getFragmentId();
             Log.d("GET ITEM POSITION", String.valueOf(index));
 
-            if(index==-1) return POSITION_NONE;
-            return index;
+            if (index == -1) {
+                return POSITION_NONE;
+            } else if (index == pages.size()) {
+                return index - 1;
+            } else {
+                return index;
+            }
         }
 
     }
