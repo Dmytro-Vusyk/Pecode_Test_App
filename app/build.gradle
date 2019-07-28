@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId 'com.github.DmitriyVusyk.pecode_test_app'
+        applicationId 'com.github.DmitriyVusyk.PecodeTestApp'
         minSdkVersion 21
         targetSdkVersion 21
         versionCode 1

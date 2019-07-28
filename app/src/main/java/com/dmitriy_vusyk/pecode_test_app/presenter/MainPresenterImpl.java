@@ -1,31 +1,25 @@
 package com.dmitriy_vusyk.pecode_test_app.presenter;
 
 import android.os.Bundle;
+
 import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
 import com.dmitriy_vusyk.pecode_test_app.App;
-import com.dmitriy_vusyk.pecode_test_app.handlers.NotificationHandler;
 import com.dmitriy_vusyk.pecode_test_app.activity.MainActivity;
+import com.dmitriy_vusyk.pecode_test_app.handlers.NotificationHandler;
 import com.dmitriy_vusyk.pecode_test_app.interfaces.MainActivityContract;
 import com.dmitriy_vusyk.pecode_test_app.view.FragmentPagerAdapter;
-import com.dmitriy_vusyk.pecode_test_app.view.PageFragment;
+import com.dmitriy_vusyk.pecode_test_app.view.fragments.PageFragment;
 
 import java.util.ArrayList;
+
 import static com.dmitriy_vusyk.pecode_test_app.constants.Constants.ARGUMENT_PAGE_LABEL;
 import static com.dmitriy_vusyk.pecode_test_app.constants.Constants.ARGUMENT_PAGE_NUMBER;
 
 public class MainPresenterImpl implements MainActivityContract.Presenter {
 
     private static MainPresenterImpl instance;
-
-    public static MainPresenterImpl getInstance(MainActivity activity) {
-        if (instance == null) {
-            instance = new MainPresenterImpl(activity);
-        }
-        return instance;
-    }
-
     private ViewPager pager;
     private FragmentPagerAdapter fragmentPagerAdapter;
     private ArrayList<Integer> notificationIds;
@@ -42,6 +36,13 @@ public class MainPresenterImpl implements MainActivityContract.Presenter {
         pager.setAdapter(fragmentPagerAdapter);
         activity.setPresenter(this);
         notificationHandler = new NotificationHandler();
+    }
+
+    public static MainPresenterImpl getInstance(MainActivity activity) {
+        if (instance == null) {
+            instance = new MainPresenterImpl(activity);
+        }
+        return instance;
     }
 
     @Override
@@ -64,7 +65,7 @@ public class MainPresenterImpl implements MainActivityContract.Presenter {
     public void removeFragment() {
         int itemPosition = pager.getCurrentItem();
         if (itemPosition > 0) {
-            removeAllNotificationsForFragment(itemPosition);
+            removeAllNotificationsForFragment(fragmentPagerAdapter.getRegisteredFragment(itemPosition).getId());
             fragmentPagerAdapter.removeFragment(itemPosition);
             pager.setAdapter(new FragmentPagerAdapter(fragmentManager, attachedFragments));
             pager.setCurrentItem(itemPosition - 1);
@@ -82,8 +83,8 @@ public class MainPresenterImpl implements MainActivityContract.Presenter {
 
     @Override
     public void createNotification() {
-        int id = fragmentPagerAdapter.getRegisteredFragment(pager.getCurrentItem()).getLabel() + 1;
-        notificationHandler.createNotification(App.getInstance().getApplicationContext(), id);
+        int label = fragmentPagerAdapter.getRegisteredFragment(pager.getCurrentItem()).getLabel() + 1;
+        notificationHandler.createNotification(App.getInstance().getApplicationContext(), label);
         notificationIds.add(notificationHandler.getNotificationId());
         notificationHandler.bindNotifications(fragmentPagerAdapter.getRegisteredFragment(pager.getCurrentItem()).getId(), notificationIds);
     }
@@ -94,8 +95,8 @@ public class MainPresenterImpl implements MainActivityContract.Presenter {
     }
 
     @Override
-    public void removeAllNotificationsForFragment(int fragmentPosition) {
-        notificationHandler.deleteAllFragmentNotifications(App.getInstance().getApplicationContext(), fragmentPosition);
+    public void removeAllNotificationsForFragment(int fragmentId) {
+        notificationHandler.deleteAllFragmentNotifications(App.getInstance().getApplicationContext(), fragmentId);
     }
 
     private PageFragment createNewFragment(int id) {

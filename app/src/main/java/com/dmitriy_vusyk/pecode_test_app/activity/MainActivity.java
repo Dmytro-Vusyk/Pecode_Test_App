@@ -7,11 +7,12 @@ import android.view.animation.AlphaAnimation;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import com.dmitriy_vusyk.pecode_test_app.R;
 import com.dmitriy_vusyk.pecode_test_app.constants.Constants;
 import com.dmitriy_vusyk.pecode_test_app.interfaces.MainActivityContract;
 import com.dmitriy_vusyk.pecode_test_app.presenter.MainPresenterImpl;
-import com.dmitriy_vusyk.pecode_test_app.handlers.NotificationHandler;
-import com.dmitriy_vusyk.pecode_test_app.R;
+
+import static com.dmitriy_vusyk.pecode_test_app.constants.Constants.FRAGMENT_ID;
 
 public class MainActivity extends AppCompatActivity implements MainActivityContract.View {
 
@@ -23,7 +24,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        pager = (ViewPager) findViewById(R.id.pager);
+        pager = findViewById(R.id.pager);
         MainPresenterImpl.getInstance(this);
         presenter.createFragment();
     }
@@ -31,9 +32,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
     @Override
     protected void onResume() {
         super.onResume();
-        if (!isStopped){
-        animatePager(pager);
-        isStopped = true;
+        if (!isStopped) {
+            animatePager(pager);
+            isStopped = true;
         }
     }
 
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        isStopped = savedInstanceState.getBoolean(Constants.IS_STOPPED,false);
+        isStopped = savedInstanceState.getBoolean(Constants.IS_STOPPED, false);
     }
 
     public ViewPager getPager() {
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
 
     @Override
     protected void onNewIntent(Intent intent) {
-        int id = intent.getIntExtra(NotificationHandler.FRAGMENT_ID, 0);
+        int id = intent.getIntExtra(FRAGMENT_ID, 0);
         presenter.setPagerCurrentItem(id);
     }
 
@@ -70,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
         this.presenter = presenter;
     }
 
-    private void animatePager(ViewPager pager){
+    private void animatePager(ViewPager pager) {
         AlphaAnimation animation = new AlphaAnimation(0.2f, 1.0f);
         animation.setDuration(400);
         animation.setStartOffset(50);

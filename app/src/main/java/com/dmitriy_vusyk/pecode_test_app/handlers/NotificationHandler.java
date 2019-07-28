@@ -11,23 +11,24 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
+
 import androidx.core.app.NotificationCompat;
 
 import com.dmitriy_vusyk.pecode_test_app.R;
 import com.dmitriy_vusyk.pecode_test_app.activity.MainActivity;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
 import static android.content.Context.NOTIFICATION_SERVICE;
+import static com.dmitriy_vusyk.pecode_test_app.constants.Constants.FRAGMENT_ID;
+import static com.dmitriy_vusyk.pecode_test_app.constants.Constants.NOTIFICATION_CHANNEL_ID;
 
 public class NotificationHandler {
 
     private Map<Integer, ArrayList<Integer>> notificationsBuffer = new HashMap<>();
     private int notificationId = 0;
     private int pendingIntentId = 0;
-    private static final String NOTIFICATION_CHANNEL_ID = "notification_channel";
-    public static final String FRAGMENT_ID = "fragment_ID";
 
     public NotificationHandler() {
     }
@@ -41,7 +42,6 @@ public class NotificationHandler {
         NotificationManager notificationManager = (NotificationManager)
                 context.getSystemService(NOTIFICATION_SERVICE);
 
-        //  notification channel for Android O devices
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel mChannel = new NotificationChannel(
                     NOTIFICATION_CHANNEL_ID,
@@ -63,8 +63,6 @@ public class NotificationHandler {
                         .setAutoCancel(true)
                         .setShowWhen(false);
 
-        // Trigger the notification by calling notify on the NotificationManager.
-        // Pass in a unique ID of your choosing for the notification and notificationBuilder.build()
         notificationManager.notify(notificationId, notificationBuilder.build());
         incrementIDs();
     }
@@ -101,14 +99,14 @@ public class NotificationHandler {
     }
 
     /**
-     *  This method is necessary to decode a bitmap needed for the notification.
+     * This method is necessary to decode a bitmap needed for the notification.
+     *
      * @param context application context
      * @return Bitmap for LargeIcon in notification
      */
     private Bitmap largeIcon(Context context) {
         Resources res = context.getResources();
-        Bitmap largeIcon = BitmapFactory.decodeResource(res, R.drawable.circle_blue);
-        return largeIcon;
+        return BitmapFactory.decodeResource(res, R.drawable.circle_blue);
     }
 
     private void incrementIDs() {

@@ -1,6 +1,6 @@
 package com.dmitriy_vusyk.pecode_test_app.interfaces;
 
-import com.dmitriy_vusyk.pecode_test_app.view.PageFragment;
+import com.dmitriy_vusyk.pecode_test_app.view.fragments.PageFragment;
 
 public interface MainActivityContract {
 

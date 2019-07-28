@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
+import com.dmitriy_vusyk.pecode_test_app.view.fragments.PageFragment;
+
 import java.util.ArrayList;
 
 public class FragmentPagerAdapter extends FragmentStatePagerAdapter {
@@ -42,8 +44,7 @@ public class FragmentPagerAdapter extends FragmentStatePagerAdapter {
     public PageFragment getRegisteredFragment(int position) {
         if (fragmentList.size() > 0) {
             return fragmentList.get(position);
-        }
-        else {
+        } else {
             return null;
         }
     }
