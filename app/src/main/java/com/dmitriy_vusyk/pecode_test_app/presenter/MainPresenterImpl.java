@@ -1,16 +1,21 @@
-package com.dmitriy_vusyk.pecode_test_app;
+package com.dmitriy_vusyk.pecode_test_app.presenter;
 
 import android.os.Bundle;
-
 import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
+import com.dmitriy_vusyk.pecode_test_app.App;
+import com.dmitriy_vusyk.pecode_test_app.handlers.NotificationHandler;
+import com.dmitriy_vusyk.pecode_test_app.activity.MainActivity;
+import com.dmitriy_vusyk.pecode_test_app.interfaces.MainActivityContract;
+import com.dmitriy_vusyk.pecode_test_app.view.FragmentPagerAdapter;
+import com.dmitriy_vusyk.pecode_test_app.view.PageFragment;
+
 import java.util.ArrayList;
+import static com.dmitriy_vusyk.pecode_test_app.constants.Constants.ARGUMENT_PAGE_LABEL;
+import static com.dmitriy_vusyk.pecode_test_app.constants.Constants.ARGUMENT_PAGE_NUMBER;
 
-import static com.dmitriy_vusyk.pecode_test_app.Constants.ARGUMENT_PAGE_LABEL;
-import static com.dmitriy_vusyk.pecode_test_app.Constants.ARGUMENT_PAGE_NUMBER;
-
-class MainPresenterImpl implements MainActivityContract.Presenter {
+public class MainPresenterImpl implements MainActivityContract.Presenter {
 
     private static MainPresenterImpl instance;
 
@@ -22,9 +27,9 @@ class MainPresenterImpl implements MainActivityContract.Presenter {
     }
 
     private ViewPager pager;
-    private MyPagerAdapter pagerAdapter;
+    private FragmentPagerAdapter fragmentPagerAdapter;
     private ArrayList<Integer> notificationIds;
-    private ArrayList<MyFragment> attachedFragments;
+    private ArrayList<PageFragment> attachedFragments;
     private FragmentManager fragmentManager;
     private NotificationHandler notificationHandler;
 
@@ -32,24 +37,24 @@ class MainPresenterImpl implements MainActivityContract.Presenter {
         notificationIds = new ArrayList<>();
         fragmentManager = activity.getSupportFragmentManager();
         attachedFragments = new ArrayList<>();
-        pagerAdapter = new MyPagerAdapter(fragmentManager, attachedFragments);
+        fragmentPagerAdapter = new FragmentPagerAdapter(fragmentManager, attachedFragments);
         pager = activity.getPager();
-        pager.setAdapter(pagerAdapter);
+        pager.setAdapter(fragmentPagerAdapter);
         activity.setPresenter(this);
         notificationHandler = new NotificationHandler();
     }
 
     @Override
-    public MyFragment createFragment() {
+    public PageFragment createFragment() {
         int itemPosition = pager.getCurrentItem();
-        MyFragment currentFragment = pagerAdapter.getRegisteredFragment(itemPosition);
-        MyFragment newFragment;
+        PageFragment currentFragment = fragmentPagerAdapter.getRegisteredFragment(itemPosition);
+        PageFragment newFragment;
         if (currentFragment == null) {
             newFragment = createNewFragment(0);
             pager.setCurrentItem(0);
         } else {
             newFragment = createNewFragment(incrementLabel());
-            pager.setAdapter(new MyPagerAdapter(fragmentManager, attachedFragments));
+            pager.setAdapter(new FragmentPagerAdapter(fragmentManager, attachedFragments));
             pager.setCurrentItem(itemPosition);
         }
         return newFragment;
@@ -60,8 +65,8 @@ class MainPresenterImpl implements MainActivityContract.Presenter {
         int itemPosition = pager.getCurrentItem();
         if (itemPosition > 0) {
             removeAllNotificationsForFragment(itemPosition);
-            pagerAdapter.removeFragment(itemPosition);
-            pager.setAdapter(new MyPagerAdapter(fragmentManager, attachedFragments));
+            fragmentPagerAdapter.removeFragment(itemPosition);
+            pager.setAdapter(new FragmentPagerAdapter(fragmentManager, attachedFragments));
             pager.setCurrentItem(itemPosition - 1);
         }
     }
@@ -77,10 +82,10 @@ class MainPresenterImpl implements MainActivityContract.Presenter {
 
     @Override
     public void createNotification() {
-        int id = pagerAdapter.getRegisteredFragment(pager.getCurrentItem()).getLabel() + 1;
+        int id = fragmentPagerAdapter.getRegisteredFragment(pager.getCurrentItem()).getLabel() + 1;
         notificationHandler.createNotification(App.getInstance().getApplicationContext(), id);
         notificationIds.add(notificationHandler.getNotificationId());
-        notificationHandler.bindNotifications(pagerAdapter.getRegisteredFragment(pager.getCurrentItem()).getId(), notificationIds);
+        notificationHandler.bindNotifications(fragmentPagerAdapter.getRegisteredFragment(pager.getCurrentItem()).getId(), notificationIds);
     }
 
     @Override
@@ -93,8 +98,8 @@ class MainPresenterImpl implements MainActivityContract.Presenter {
         notificationHandler.deleteAllFragmentNotifications(App.getInstance().getApplicationContext(), fragmentPosition);
     }
 
-    private MyFragment createNewFragment(int id) {
-        MyFragment fragment = new MyFragment();
+    private PageFragment createNewFragment(int id) {
+        PageFragment fragment = new PageFragment();
         Bundle arguments = new Bundle();
         int pageLabel = id;
         arguments.putInt(ARGUMENT_PAGE_NUMBER, id);
@@ -104,15 +109,11 @@ class MainPresenterImpl implements MainActivityContract.Presenter {
         fragment.setLabel(pageLabel);
         fragment.setPresenter(this);
         attachedFragments.add(fragment);
-        pagerAdapter.notifyDataSetChanged();
+        fragmentPagerAdapter.notifyDataSetChanged();
         return fragment;
     }
 
     private int incrementLabel() {
-        return pagerAdapter.getFragmentList().get(pagerAdapter.getFragmentList().size() - 1).getLabel() + 1;
-    }
-
-    public ArrayList<MyFragment> getAttachedFragments() {
-        return attachedFragments;
+        return fragmentPagerAdapter.getFragmentList().get(fragmentPagerAdapter.getFragmentList().size() - 1).getLabel() + 1;
     }
 }

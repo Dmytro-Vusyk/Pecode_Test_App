@@ -1,4 +1,4 @@
-package com.dmitriy_vusyk.pecode_test_app;
+package com.dmitriy_vusyk.pecode_test_app.handlers;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -11,13 +11,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
-
 import androidx.core.app.NotificationCompat;
+
+import com.dmitriy_vusyk.pecode_test_app.R;
+import com.dmitriy_vusyk.pecode_test_app.activity.MainActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
 import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class NotificationHandler {
@@ -62,13 +63,6 @@ public class NotificationHandler {
                         .setAutoCancel(true)
                         .setShowWhen(false);
 
-        // If the build version is greater than or equal to JELLY_BEAN and less than OREO,
-        // set the notification's priority to PRIORITY_HIGH.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
-                && Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
-        }
-
         // Trigger the notification by calling notify on the NotificationManager.
         // Pass in a unique ID of your choosing for the notification and notificationBuilder.build()
         notificationManager.notify(notificationId, notificationBuilder.build());
@@ -78,7 +72,6 @@ public class NotificationHandler {
     private PendingIntent contentIntent(Context context, int id) {
         Intent startActivityIntent = new Intent(context, MainActivity.class);
         startActivityIntent.putExtra(FRAGMENT_ID, id);
-
         return PendingIntent.getActivity(
                 context,
                 pendingIntentId,
@@ -107,13 +100,13 @@ public class NotificationHandler {
 
     }
 
-    // Create a helper method called largeIcon which takes in a Context as a parameter and
-    // returns a Bitmap. This method is necessary to decode a bitmap needed for the notification.
+    /**
+     *  This method is necessary to decode a bitmap needed for the notification.
+     * @param context application context
+     * @return Bitmap for LargeIcon in notification
+     */
     private Bitmap largeIcon(Context context) {
-        // Get a Resources object from the context.
         Resources res = context.getResources();
-        // Create and return a bitmap using BitmapFactory.decodeResource, passing in the
-        // resources object and R.drawable //TODO create drawable for notification
         Bitmap largeIcon = BitmapFactory.decodeResource(res, R.drawable.circle_blue);
         return largeIcon;
     }

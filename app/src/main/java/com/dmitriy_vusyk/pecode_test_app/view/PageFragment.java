@@ -1,4 +1,4 @@
-package com.dmitriy_vusyk.pecode_test_app;
+package com.dmitriy_vusyk.pecode_test_app.view;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -7,31 +7,26 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import java.util.ArrayList;
+import com.dmitriy_vusyk.pecode_test_app.presenter.MainPresenterImpl;
+import com.dmitriy_vusyk.pecode_test_app.R;
 
-import static com.dmitriy_vusyk.pecode_test_app.Constants.ARGUMENT_PAGE_LABEL;
-import static com.dmitriy_vusyk.pecode_test_app.Constants.ARGUMENT_PAGE_NUMBER;
+import static com.dmitriy_vusyk.pecode_test_app.constants.Constants.ARGUMENT_PAGE_LABEL;
+import static com.dmitriy_vusyk.pecode_test_app.constants.Constants.ARGUMENT_PAGE_NUMBER;
 
-//TODO don#t forget to delete Log tags
-public class MyFragment extends Fragment implements View.OnClickListener {
+public class PageFragment extends Fragment implements View.OnClickListener {
 
-
-    private final String TAG = getClass().getSimpleName();
     private ImageButton ibCreateNotification;
     private ImageButton ibAddFragment;
     private ImageButton ibDeleteFragment;
     private TextView tvFragmentNumber;
     private TextView tvCreateNotification;
     private ImageView ivOval;
-    private NotificationHandler notificationHandler = new NotificationHandler();
     private int fragmentId;
     private int label;
-    private ArrayList<Integer> ids = new ArrayList<>();
     private MainPresenterImpl presenter;
 
     public int getFragmentId() {
@@ -92,7 +87,6 @@ public class MyFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        MainActivity activity = (MainActivity) getActivity();
 
         switch (id) {
             case R.id.btn_create_notification:

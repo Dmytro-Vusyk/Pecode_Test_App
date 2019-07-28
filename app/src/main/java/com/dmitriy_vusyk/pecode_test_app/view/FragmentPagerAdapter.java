@@ -1,4 +1,4 @@
-package com.dmitriy_vusyk.pecode_test_app;
+package com.dmitriy_vusyk.pecode_test_app.view;
 
 import android.util.Log;
 import android.view.ViewGroup;
@@ -10,12 +10,12 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import java.util.ArrayList;
 
-public class MyPagerAdapter extends FragmentStatePagerAdapter {
+public class FragmentPagerAdapter extends FragmentStatePagerAdapter {
 
-    private ArrayList<MyFragment> fragmentList;
+    private ArrayList<PageFragment> fragmentList;
     private FragmentManager fm;
 
-    public MyPagerAdapter(FragmentManager fm, ArrayList<MyFragment> fragmentList) {
+    public FragmentPagerAdapter(FragmentManager fm, ArrayList<PageFragment> fragmentList) {
         super(fm);
         this.fragmentList = fragmentList;
     }
@@ -34,12 +34,12 @@ public class MyPagerAdapter extends FragmentStatePagerAdapter {
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        MyFragment instantiatedFragment = (MyFragment) super.instantiateItem(container, position);
+        PageFragment instantiatedFragment = (PageFragment) super.instantiateItem(container, position);
         Log.d("INSTANTIATE ITEM_1", String.valueOf(position));
         return instantiatedFragment;
     }
 
-    public MyFragment getRegisteredFragment(int position) {
+    public PageFragment getRegisteredFragment(int position) {
         if (fragmentList.size() > 0) {
             return fragmentList.get(position);
         }
@@ -50,7 +50,7 @@ public class MyPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getItemPosition(@NonNull Object object) {
-        int index = ((MyFragment) object).getFragmentId();
+        int index = ((PageFragment) object).getFragmentId();
         Log.d("GET ITEM POSITION", String.valueOf(index));
         if (index == -1) {
             return POSITION_NONE;
@@ -58,7 +58,7 @@ public class MyPagerAdapter extends FragmentStatePagerAdapter {
         return index;
     }
 
-    public ArrayList<MyFragment> getFragmentList() {
+    public ArrayList<PageFragment> getFragmentList() {
         return fragmentList;
     }
 

@@ -1,4 +1,6 @@
-package com.dmitriy_vusyk.pecode_test_app;
+package com.dmitriy_vusyk.pecode_test_app.interfaces;
+
+import com.dmitriy_vusyk.pecode_test_app.view.PageFragment;
 
 public interface MainActivityContract {
 
@@ -9,7 +11,7 @@ public interface MainActivityContract {
 
     interface Presenter {
 
-        MyFragment createFragment();
+        PageFragment createFragment();
 
         void removeFragment();
 
