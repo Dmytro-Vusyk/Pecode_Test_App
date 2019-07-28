@@ -1,9 +1,6 @@
 package com.dmitriy_vusyk.pecode_test_app;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,15 +8,20 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
-public class MyFragment extends android.support.v4.app.Fragment implements View.OnClickListener {
+import java.util.ArrayList;
+//TODO don#t forget to delete Log tags
+public class MyFragment extends Fragment implements View.OnClickListener {
 
     private final String TAG = getClass().getSimpleName();
     private ImageButton ibCreateNotification;
     private ImageButton ibAddFragment;
     private ImageButton ibDeleteFragment;
     private TextView tvFragmentNumber;
+    private TextView tvCreateNotification;
     private ImageView ivOval;
     private NotificationFactory factory = new NotificationFactory();
     private static final String ARGUMENT_PAGE_NUMBER = "arg_page_number";
@@ -67,13 +69,15 @@ public class MyFragment extends android.support.v4.app.Fragment implements View.
         tvFragmentNumber = (TextView) view.findViewById(R.id.fragment_number);
         tvFragmentNumber.setText(String.valueOf(label));
         tvFragmentNumber.setContentDescription(String.valueOf(label));
+        tvCreateNotification = (TextView) view.findViewById(R.id.tv_create_notification);
+        tvCreateNotification.setText(R.string.create_notification_button);
+        tvCreateNotification.setTextSize(20);
 
         if (fragmentId == 0) {
             ibDeleteFragment.setVisibility(View.INVISIBLE);
         } else {
             ibDeleteFragment.setVisibility(View.VISIBLE);
         }
-
         return view;
     }
 
@@ -93,7 +97,7 @@ public class MyFragment extends android.support.v4.app.Fragment implements View.
             case R.id.btn_create_notification:
                 factory.createNotification(getContext(), label);
                 ids.add(factory.getNotificationId());
-                factory.bindNotifications(currentFragment, ids);
+                factory.bindNotifications(currentFragment.getId(), ids);
                 break;
 
             case R.id.btn_plus:
@@ -102,25 +106,27 @@ public class MyFragment extends android.support.v4.app.Fragment implements View.
                 if (nextPagePosition < activity.pages.size() &&
                         nextFragment.fragmentId == activity.myPagerAdapter.getRegisteredFragment(nextPagePosition).fragmentId) {
                     activity.pager.setCurrentItem(nextPagePosition);
-                } else if (nextPagePosition == activity.pages.size()) {
-                    activity.pages.add(nextFragment);
-                    activity.myPagerAdapter.notifyDataSetChanged();
-                    activity.pager.setAdapter(activity.myPagerAdapter);
-                    activity.pager.setCurrentItem(itemPosition + 1);
-                } else {
+                } //else if (nextPagePosition == activity.pages.size()) {
+                  //  activity.pages.add(nextFragment);
+                  //  activity.myPagerAdapter.notifyDataSetChanged();
+//              //    activity.pager.setOffscreenPageLimit(activity.myPagerAdapter.getCount()-1);
+                  //  activity.pager.setAdapter(activity.recreateAdapter());
+                  //  activity.pager.setCurrentItem(itemPosition + 1);
+                  //  }
+                else {
                     activity.pages.add(nextPagePosition, nextFragment);
                     activity.myPagerAdapter.notifyDataSetChanged();
-                    activity.pager.setAdapter(activity.myPagerAdapter);
+                    activity.pager.setAdapter(activity.recreateAdapter());
                     activity.pager.setCurrentItem(itemPosition + 1);
                 }
                 break;
 
             case R.id.btn_minus:
                 if (itemPosition > 0) {
-                    factory.deleteAllFragmentNotifications(getContext(), currentFragment);
+                    factory.deleteAllFragmentNotifications(getContext(), currentFragment.getId());
                     activity.pages.remove(itemPosition);
                     activity.myPagerAdapter.notifyDataSetChanged();
-                    activity.pager.setAdapter(activity.myPagerAdapter);
+                    activity.pager.setAdapter(activity.recreateAdapter());
                     activity.pager.setCurrentItem(itemPosition - 1);
                 }
                 break;
@@ -131,7 +137,7 @@ public class MyFragment extends android.support.v4.app.Fragment implements View.
             //     MyFragment nextFragment = MyFragment.getInstance(lastFragment.fragmentId+1);
             //     activity.pages.add(nextFragment);
             //     activity.myPagerAdapter.notifyDataSetChanged();
-            //     activity.pager.setAdapter(activity.myPagerAdapter);
+            //     activity.pager.setAdapter(activity.recreateAdapter());
             //     activity.pager.setCurrentItem(itemPosition);
             //     break;
         }

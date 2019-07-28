@@ -9,9 +9,10 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Build;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +22,7 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class NotificationFactory {
 
-    private Map<MyFragment, ArrayList<Integer>> notificationsBuffer = new HashMap<>();
+    private Map<Integer, ArrayList<Integer>> notificationsBuffer = new HashMap<>();
     private int notificationId = 0;
     private int pendingIntentId = 0;
     private static final String NOTIFICATION_CHANNEL_ID = "notification_channel";
@@ -50,12 +51,14 @@ public class NotificationFactory {
 
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+                        .setColor(Color.BLUE)
                         .setSmallIcon(R.drawable.circle)
                         .setContentTitle(context.getString(R.string.notification_title))
                         .setContentText(context.getString(R.string.notification_body) + " " + label)
                         .setStyle(new NotificationCompat.BigTextStyle().bigText(
                                 context.getString(R.string.notification_body)))
                         .setDefaults(Notification.DEFAULT_VIBRATE)
+                        .setPriority(NotificationCompat.PRIORITY_MAX)
                         .setContentIntent(contentIntent(context, label - 1))
                         .setAutoCancel(true)
                         .setShowWhen(false);
@@ -84,17 +87,17 @@ public class NotificationFactory {
                 PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
-    public void bindNotifications(MyFragment f, ArrayList<Integer> ids) {
+    public void bindNotifications(Integer f, ArrayList<Integer> ids) {
         notificationsBuffer.put(f, ids);
     }
 
-    public void deleteAllFragmentNotifications(Context context, MyFragment fragment) {
-        ArrayList<Integer> values = notificationsBuffer.get(fragment);
+    public void deleteAllFragmentNotifications(Context context, Integer id) {
+        ArrayList<Integer> values = notificationsBuffer.get(id);
         if (values != null) {
-            for (Integer id : values) {
-                deleteIntent(context, id);
+            for (Integer i : values) {
+                deleteIntent(context, i);
             }
-            notificationsBuffer.remove(fragment);
+            notificationsBuffer.remove(id);
         }
     }
 
