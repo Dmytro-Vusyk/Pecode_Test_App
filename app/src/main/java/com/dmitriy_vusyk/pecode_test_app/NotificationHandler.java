@@ -11,8 +11,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
+
 import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +20,7 @@ import java.util.Map;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
-public class NotificationFactory {
+public class NotificationHandler {
 
     private Map<Integer, ArrayList<Integer>> notificationsBuffer = new HashMap<>();
     private int notificationId = 0;
@@ -28,7 +28,7 @@ public class NotificationFactory {
     private static final String NOTIFICATION_CHANNEL_ID = "notification_channel";
     public static final String FRAGMENT_ID = "fragment_ID";
 
-    public NotificationFactory() {
+    public NotificationHandler() {
     }
 
     public int getNotificationId() {
@@ -52,11 +52,10 @@ public class NotificationFactory {
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
                         .setColor(Color.BLUE)
-                        .setSmallIcon(R.drawable.circle)
+                        .setSmallIcon(R.drawable.circle_blue)
+                        .setLargeIcon(largeIcon(context))
                         .setContentTitle(context.getString(R.string.notification_title))
                         .setContentText(context.getString(R.string.notification_body) + " " + label)
-                        .setStyle(new NotificationCompat.BigTextStyle().bigText(
-                                context.getString(R.string.notification_body)))
                         .setDefaults(Notification.DEFAULT_VIBRATE)
                         .setPriority(NotificationCompat.PRIORITY_MAX)
                         .setContentIntent(contentIntent(context, label - 1))
@@ -115,7 +114,7 @@ public class NotificationFactory {
         Resources res = context.getResources();
         // Create and return a bitmap using BitmapFactory.decodeResource, passing in the
         // resources object and R.drawable //TODO create drawable for notification
-        Bitmap largeIcon = BitmapFactory.decodeResource(res, R.drawable.oval_blue);
+        Bitmap largeIcon = BitmapFactory.decodeResource(res, R.drawable.circle_blue);
         return largeIcon;
     }
 

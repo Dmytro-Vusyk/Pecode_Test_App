@@ -13,8 +13,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
+
+import static com.dmitriy_vusyk.pecode_test_app.Constants.ARGUMENT_PAGE_LABEL;
+import static com.dmitriy_vusyk.pecode_test_app.Constants.ARGUMENT_PAGE_NUMBER;
+
 //TODO don#t forget to delete Log tags
 public class MyFragment extends Fragment implements View.OnClickListener {
+
 
     private final String TAG = getClass().getSimpleName();
     private ImageButton ibCreateNotification;
@@ -23,27 +28,30 @@ public class MyFragment extends Fragment implements View.OnClickListener {
     private TextView tvFragmentNumber;
     private TextView tvCreateNotification;
     private ImageView ivOval;
-    private NotificationFactory factory = new NotificationFactory();
-    private static final String ARGUMENT_PAGE_NUMBER = "arg_page_number";
-    private static final String ARGUMENT_PAGE_LABEL = "arg_page_label";
+    private NotificationHandler notificationHandler = new NotificationHandler();
     private int fragmentId;
     private int label;
     private ArrayList<Integer> ids = new ArrayList<>();
-
-    public static MyFragment getInstance(int id) {
-        MyFragment fragment = new MyFragment();
-        Bundle arguments = new Bundle();
-        int pageLabel = id + 1;
-        arguments.putInt(ARGUMENT_PAGE_NUMBER, id);
-        arguments.putInt(ARGUMENT_PAGE_LABEL, pageLabel);
-        fragment.setArguments(arguments);
-        fragment.fragmentId = id;
-        fragment.label = pageLabel;
-        return fragment;
-    }
+    private MainPresenterImpl presenter;
 
     public int getFragmentId() {
         return fragmentId;
+    }
+
+    public void setFragmentId(int fragmentId) {
+        this.fragmentId = fragmentId;
+    }
+
+    public int getLabel() {
+        return label;
+    }
+
+    public void setLabel(int label) {
+        this.label = label;
+    }
+
+    public void setPresenter(MainPresenterImpl presenter) {
+        this.presenter = presenter;
     }
 
     @Override
@@ -57,26 +65,21 @@ public class MyFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_layout, container, false);
-        ivOval = (ImageView) view.findViewById(R.id.image_rect_oval);
-        ibCreateNotification = (ImageButton) view.findViewById(R.id.btn_create_notification);
+        ivOval = view.findViewById(R.id.image_rect_oval);
+        ibCreateNotification = view.findViewById(R.id.btn_create_notification);
         ibCreateNotification.setOnClickListener(this);
-        ibAddFragment = (ImageButton) view.findViewById(R.id.btn_plus);
+        ibAddFragment = view.findViewById(R.id.btn_plus);
         ibAddFragment.bringToFront();
         ibAddFragment.setOnClickListener(this);
-        ibDeleteFragment = (ImageButton) view.findViewById(R.id.btn_minus);
+        ibDeleteFragment = view.findViewById(R.id.btn_minus);
         ibDeleteFragment.bringToFront();
         ibDeleteFragment.setOnClickListener(this);
-        tvFragmentNumber = (TextView) view.findViewById(R.id.fragment_number);
-        tvFragmentNumber.setText(String.valueOf(label));
-        tvFragmentNumber.setContentDescription(String.valueOf(label));
-        tvCreateNotification = (TextView) view.findViewById(R.id.tv_create_notification);
-        tvCreateNotification.setText(R.string.create_notification_button);
-        tvCreateNotification.setTextSize(20);
+        tvFragmentNumber = view.findViewById(R.id.fragment_number);
+        tvFragmentNumber.setText(String.valueOf(label+1));
+        tvCreateNotification = view.findViewById(R.id.tv_create_notification);
 
         if (fragmentId == 0) {
             ibDeleteFragment.setVisibility(View.INVISIBLE);
-        } else {
-            ibDeleteFragment.setVisibility(View.VISIBLE);
         }
         return view;
     }
@@ -90,56 +93,17 @@ public class MyFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         int id = v.getId();
         MainActivity activity = (MainActivity) getActivity();
-        int itemPosition = activity.pager.getCurrentItem();
-        MyFragment currentFragment = activity.myPagerAdapter.getRegisteredFragment(itemPosition);
 
         switch (id) {
             case R.id.btn_create_notification:
-                factory.createNotification(getContext(), label);
-                ids.add(factory.getNotificationId());
-                factory.bindNotifications(currentFragment.getId(), ids);
+                presenter.createNotification();
                 break;
-
             case R.id.btn_plus:
-                int nextPagePosition = itemPosition + 1;
-                MyFragment nextFragment = MyFragment.getInstance(currentFragment.fragmentId + 1);
-                if (nextPagePosition < activity.pages.size() &&
-                        nextFragment.fragmentId == activity.myPagerAdapter.getRegisteredFragment(nextPagePosition).fragmentId) {
-                    activity.pager.setCurrentItem(nextPagePosition);
-                } //else if (nextPagePosition == activity.pages.size()) {
-                  //  activity.pages.add(nextFragment);
-                  //  activity.myPagerAdapter.notifyDataSetChanged();
-//              //    activity.pager.setOffscreenPageLimit(activity.myPagerAdapter.getCount()-1);
-                  //  activity.pager.setAdapter(activity.recreateAdapter());
-                  //  activity.pager.setCurrentItem(itemPosition + 1);
-                  //  }
-                else {
-                    activity.pages.add(nextPagePosition, nextFragment);
-                    activity.myPagerAdapter.notifyDataSetChanged();
-                    activity.pager.setAdapter(activity.recreateAdapter());
-                    activity.pager.setCurrentItem(itemPosition + 1);
-                }
+                presenter.createFragment();
                 break;
-
             case R.id.btn_minus:
-                if (itemPosition > 0) {
-                    factory.deleteAllFragmentNotifications(getContext(), currentFragment.getId());
-                    activity.pages.remove(itemPosition);
-                    activity.myPagerAdapter.notifyDataSetChanged();
-                    activity.pager.setAdapter(activity.recreateAdapter());
-                    activity.pager.setCurrentItem(itemPosition - 1);
-                }
+                presenter.removeFragment();
                 break;
-
-            //Uncomment this for simple button plus realisation
-            // case R.id.btn_plus:
-            //     MyFragment lastFragment = activity.myPagerAdapter.getRegisteredFragment(activity.pages.size()-1);
-            //     MyFragment nextFragment = MyFragment.getInstance(lastFragment.fragmentId+1);
-            //     activity.pages.add(nextFragment);
-            //     activity.myPagerAdapter.notifyDataSetChanged();
-            //     activity.pager.setAdapter(activity.recreateAdapter());
-            //     activity.pager.setCurrentItem(itemPosition);
-            //     break;
         }
     }
 }
